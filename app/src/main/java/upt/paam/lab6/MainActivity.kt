@@ -43,6 +43,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import upt.paam.lab6.location.LocationHandler
 import upt.paam.lab6.ui.theme.LAB6Theme
+import android.annotation.SuppressLint
 
 
 class MainActivity : ComponentActivity() {
@@ -78,6 +79,12 @@ class MainActivity : ComponentActivity() {
                         LocationComposable()
                     }
                     // TODO 2: Add a button to call getCurrentLocation for retrieving current location
+                    Button(
+                        onClick = { getCurrentLocation() },
+                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp)
+                    ) {
+                        Text(text = "Get Current Location")
+                    }
                 }
 
             }
@@ -135,6 +142,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun getCurrentLocation() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (isLocationPermissionGranted) {
@@ -149,6 +157,14 @@ class MainActivity : ComponentActivity() {
                 return
             }
             // TODO 3 Add a fusedLocationClient function to retrieve the current location and set the marker to point to that location
+            fusedLocationClient.getCurrentLocation(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                CancellationTokenSource().token
+            ).addOnSuccessListener { location: Location? ->
+                location?.let {
+                    latLngState.value = LatLng(it.latitude, it.longitude)
+                }
+            }
         }
     }
 
